@@ -1,0 +1,5 @@
+node_modules
+files/*
+cookie
+results.json
+responses.csv
