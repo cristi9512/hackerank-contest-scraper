@@ -1,5 +1,6 @@
 const R = require("ramda");
 const converter = require("json-2-csv");
+const fs = require("fs");
 
 const groupStudentsSubmissionsById = R.groupBy((student) => student.hacker_id);
 
@@ -16,7 +17,7 @@ const groupSubmissionsByChallenge = R.groupBy(
 );
 
 const writeJsonAsCsv = (jsonFile) => {
-  converter.json2csv(responses, (err, csv) => {
+  converter.json2csv(jsonFile, (err, csv) => {
     if (err) {
       throw err;
     }

@@ -1,6 +1,5 @@
 const R = require("ramda");
 const util = require("util");
-const fs = require("fs");
 
 const {
   getAllSubmissionsForContest,
@@ -13,7 +12,6 @@ const {
   snooze,
   writeJsonAsCsv,
 } = require("./utils");
-
 
 const main = () => {
   const contestSlug = process.env.CONTEST_SLUG;
@@ -40,7 +38,7 @@ const main = () => {
       for (let j = 0; j < studentIds.length; j++) {
         const studentSubmitedChallenges = aux[studentIds[j]];
         const submissionsIds = [];
-        
+
         Object.keys(studentSubmitedChallenges).forEach((challengeId) => {
           submissionsIds.push({
             submissionId: studentSubmitedChallenges[challengeId][0].id,
@@ -55,7 +53,7 @@ const main = () => {
         const totalSubmissions = studentIds.length;
         console.log(
           "Getting submissions ... ",
-          `${Math.round(((j + 1) / totalSubmissions) * 100) / 100}%`
+          `${Math.round(((j + 1) / totalSubmissions * 100) * 100) / 100}%`
         );
 
         for (let i = 0; i < submissionsIds.length; i++) {
@@ -74,8 +72,8 @@ const main = () => {
         }
 
         //console.log(util.inspect(responses, false, null, true));
-        writeJsonAsCsv(responses);
       }
+      writeJsonAsCsv(responses);
     })
     .catch((error) => {
       console.log(error);
