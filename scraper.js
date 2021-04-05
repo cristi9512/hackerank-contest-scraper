@@ -1,21 +1,19 @@
-const fetch = require("node-fetch");
 const R = require("ramda");
 const util = require("util");
 const fs = require("fs");
-const converter = require("json-2-csv");
 
 const {
   getAllSubmissionsForContest,
   getSubmission,
 } = require("./hackerrankAPI");
 
-const groupStudentsSubmissionsById = R.groupBy((student) => student.hacker_id);
+const {
+  groupStudentsSubmissionsById,
+  groupSubmissionsByChallenge,
+  snooze,
+  writeJsonAsCsv,
+} = require("./utils");
 
-const groupSubmissionsByChallenge = R.groupBy(
-  (submission) => submission.challenge_id
-);
-
-const snooze = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 const main = () => {
   const contestSlug = process.env.CONTEST_SLUG;
@@ -31,13 +29,6 @@ const main = () => {
     .then(async (jsonResponse) => {
       const grouped = groupStudentsSubmissionsById(jsonResponse.models);
       const aux = R.map(groupSubmissionsByChallenge, grouped);
-      /*
-      {
-        studentID:{
-          challengeId: [submissionId]
-        }
-      }
-      */
 
       const studentIds = [];
       const responses = [];
@@ -49,6 +40,7 @@ const main = () => {
       for (let j = 0; j < studentIds.length; j++) {
         const studentSubmitedChallenges = aux[studentIds[j]];
         const submissionsIds = [];
+        
         Object.keys(studentSubmitedChallenges).forEach((challengeId) => {
           submissionsIds.push({
             submissionId: studentSubmitedChallenges[challengeId][0].id,
@@ -63,7 +55,7 @@ const main = () => {
         const totalSubmissions = studentIds.length;
         console.log(
           "Getting submissions ... ",
-          `${Math.round((j + 1) / totalSubmissions * 100) / 100}%`
+          `${Math.round(((j + 1) / totalSubmissions) * 100) / 100}%`
         );
 
         for (let i = 0; i < submissionsIds.length; i++) {
@@ -80,15 +72,9 @@ const main = () => {
             });
           await snooze(6000);
         }
-        //console.log(util.inspect(responses, false, null, true));
-        converter.json2csv(responses, (err, csv) => {
-          if (err) {
-            throw err;
-          }
 
-          // write CSV to a file
-          fs.writeFileSync("responses.csv", csv);
-        });
+        //console.log(util.inspect(responses, false, null, true));
+        writeJsonAsCsv(responses);
       }
     })
     .catch((error) => {
