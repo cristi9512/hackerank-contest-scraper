@@ -23,7 +23,7 @@ const main = () => {
   }
 
   getAllSubmissionsForContest(cookie, contestSlug)
-    .then((res) => res.clone().json())
+    .then((res) => res.json())
     .then(async (jsonResponse) => {
       const grouped = groupStudentsSubmissionsById(jsonResponse.models);
       const aux = R.map(groupSubmissionsByChallenge, grouped);
@@ -76,8 +76,19 @@ const main = () => {
       writeJsonAsCsv(responses);
     })
     .catch((error) => {
+      console.log('ERROR');
       console.log(error);
     });
 };
 
 main();
+
+const doSmt = async() => {
+  const contestSlug = process.env.CONTEST_SLUG;
+  const cookie = process.env.COOKIE;
+  getAllSubmissionsForContest(cookie, contestSlug).then(response => response.json()).then(r => console.log(r));
+  //console.log(response.json().then(r => console.log(r)));
+  //console.log(response.clone().json());
+}
+
+//doSmt();

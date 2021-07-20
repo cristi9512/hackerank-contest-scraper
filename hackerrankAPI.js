@@ -11,7 +11,7 @@ const getSubmission = (cookie, submissionId, contestSlug) => {
 const getAllSubmissionsForContest = (cookie, contestSlug) => {
   configs.headers.cookie = cookie;
   return fetch(
-    `https://www.hackerrank.com/rest/contests/${contestSlug}/judge_submissions?limit=100`,
+    `https://www.hackerrank.com/rest/contests/${contestSlug}/judge_submissions?limit=2000`,
     configs
   );
 };
